@@ -14,7 +14,9 @@ class MockResponse(NamedTuple):
 @pytest.fixture
 def response_with_error():
     return MockResponse(
-        b'{"error": { "message": { "value": "Gateway Error" } } }')
+        b'{"error": { "message": { "value": "Gateway Error" } } }'
+    )
+
 
 @pytest.fixture
 def response_with_error_and_innererror():
@@ -23,14 +25,16 @@ def response_with_error_and_innererror():
               "message": { "value": "Gateway Error" },\n\
               "innererror": { "errordetails" : [\n\
                              { "message" : "Inner Error 1" },\n\
-                             { "message" : "Inner Error 2" } ] } } }\n')
+                             { "message" : "Inner Error 2" } ] } } }\n'
+    )
 
 
 def test_parse_invalid_json():
     """Make sure an invalid JSON does not cause a disaster"""
 
-    sap_error = SAP.BusinessGatewayError('Programmer message',
-                                         MockResponse(b'random data'))
+    sap_error = SAP.BusinessGatewayError(
+        'Programmer message', MockResponse(b'random data')
+    )
 
     assert str(sap_error) == 'Programmer message'
     assert not sap_error.errordetails
@@ -39,8 +43,9 @@ def test_parse_invalid_json():
 def test_parse_without_error():
     """Make sure a JSON without error member does not cause a disaster"""
 
-    sap_error = SAP.BusinessGatewayError('Programmer message',
-                                         MockResponse(b'{"random": "data"}'))
+    sap_error = SAP.BusinessGatewayError(
+        'Programmer message', MockResponse(b'{"random": "data"}')
+    )
 
     assert str(sap_error) == 'Programmer message'
     assert not sap_error.errordetails
@@ -49,8 +54,9 @@ def test_parse_without_error():
 def test_parse_without_error_object():
     """Make sure a JSON without error member does not cause a disaster"""
 
-    sap_error = SAP.BusinessGatewayError('Programmer message',
-                                         MockResponse(b'{"error": "data"}'))
+    sap_error = SAP.BusinessGatewayError(
+        'Programmer message', MockResponse(b'{"error": "data"}')
+    )
 
     assert str(sap_error) == 'Programmer message'
     assert not sap_error.errordetails
@@ -59,8 +65,9 @@ def test_parse_without_error_object():
 def test_parse_without_message():
     """Make sure a JSON without message member does not cause a disaster"""
 
-    sap_error = SAP.BusinessGatewayError('Programmer message',
-                                         MockResponse(b'{"error": { "data" : "foo" } }'))
+    sap_error = SAP.BusinessGatewayError(
+        'Programmer message', MockResponse(b'{"error": { "data" : "foo" } }')
+    )
 
     assert str(sap_error) == 'Programmer message'
     assert not sap_error.errordetails
@@ -69,8 +76,10 @@ def test_parse_without_message():
 def test_parse_without_message_object():
     """Make sure a JSON without message member does not cause a disaster"""
 
-    sap_error = SAP.BusinessGatewayError('Programmer message',
-                                         MockResponse(b'{"error": { "message" : "foo" } }'))
+    sap_error = SAP.BusinessGatewayError(
+        'Programmer message',
+        MockResponse(b'{"error": { "message" : "foo" } }'),
+    )
 
     assert str(sap_error) == 'Programmer message'
     assert not sap_error.errordetails
@@ -81,7 +90,8 @@ def test_parse_without_value():
 
     sap_error = SAP.BusinessGatewayError(
         'Programmer message',
-        MockResponse(b'{"error": { "message" : { "foo" : "value" } } }'))
+        MockResponse(b'{"error": { "message" : { "foo" : "value" } } }'),
+    )
 
     assert str(sap_error) == 'Programmer message'
     assert not sap_error.errordetails
@@ -91,8 +101,8 @@ def test_parse_with_error(response_with_error):
     """Make sure a JSON without message member does not cause a disaster"""
 
     sap_error = SAP.BusinessGatewayError(
-        'Programmer message',
-        response_with_error)
+        'Programmer message', response_with_error
+    )
 
     assert str(sap_error) == 'Gateway Error'
     assert not sap_error.errordetails
@@ -100,13 +110,16 @@ def test_parse_with_error(response_with_error):
 
 def test_parse_without_errordetails():
     """Make sure a JSON without errordetails member
-       does not cause a disaster
+    does not cause a disaster
     """
 
     sap_error = SAP.BusinessGatewayError(
         'Programmer message',
-        MockResponse(b'{"error" : {\n\
-            "innererror": { "message" : "value" } } }'))
+        MockResponse(
+            b'{"error" : {\n\
+            "innererror": { "message" : "value" } } }'
+        ),
+    )
 
     assert str(sap_error) == 'Programmer message'
     assert not sap_error.errordetails
@@ -114,13 +127,16 @@ def test_parse_without_errordetails():
 
 def test_parse_without_array_errordetails():
     """Make sure a JSON without array errordetails member
-       does not cause a disaster
+    does not cause a disaster
     """
 
     sap_error = SAP.BusinessGatewayError(
         'Programmer message',
-        MockResponse(b'{"error" : {\n\
-            "innererror": { "errordetails" : "value" } } }'))
+        MockResponse(
+            b'{"error" : {\n\
+            "innererror": { "errordetails" : "value" } } }'
+        ),
+    )
 
     assert str(sap_error) == 'Programmer message'
     assert not sap_error.errordetails
@@ -128,13 +144,16 @@ def test_parse_without_array_errordetails():
 
 def test_parse_errordetails_no_object():
     """Make sure a JSON where error details are not objects
-       does not cause a disaster
+    does not cause a disaster
     """
 
     sap_error = SAP.BusinessGatewayError(
         'Programmer message',
-        MockResponse(b'{"error" : {\n\
-            "innererror": { "errordetails" : [ "foo", "bar" ] } } }'))
+        MockResponse(
+            b'{"error" : {\n\
+            "innererror": { "errordetails" : [ "foo", "bar" ] } } }'
+        ),
+    )
 
     assert str(sap_error) == 'Programmer message'
     assert not sap_error.errordetails
@@ -142,13 +161,16 @@ def test_parse_errordetails_no_object():
 
 def test_parse_errordetails_no_message():
     """Make sure a JSON where error details misses the member message
-       does not cause a disaster
+    does not cause a disaster
     """
 
     sap_error = SAP.BusinessGatewayError(
         'Programmer message',
-        MockResponse(b'{"error" : {\n\
-            "innererror": { "errordetails" : [ { "foo" : "bar" } ] } } }'))
+        MockResponse(
+            b'{"error" : {\n\
+            "innererror": { "errordetails" : [ { "foo" : "bar" } ] } } }'
+        ),
+    )
 
     assert str(sap_error) == 'Programmer message'
     assert [''] == sap_error.errordetails
@@ -158,8 +180,8 @@ def test_parse_with_error_and_innererror(response_with_error_and_innererror):
     """Make sure we parse out data correctly"""
 
     sap_error = SAP.BusinessGatewayError(
-        'Programmer error',
-        response_with_error_and_innererror)
+        'Programmer error', response_with_error_and_innererror
+    )
 
     assert str(sap_error) == 'Gateway Error'
     assert sap_error.errordetails
@@ -170,7 +192,7 @@ def test_parse_with_error_and_innererror(response_with_error_and_innererror):
 
 def test_vendor_http_error(response_with_error):
     """Check that HttpError correctly returns
-       an instance of BusinessGatewayError
+    an instance of BusinessGatewayError
     """
 
     logging.debug('First run')

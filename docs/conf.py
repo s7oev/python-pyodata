@@ -85,12 +85,12 @@ html_theme = 'alabaster'
 # documentation.
 #
 html_theme_options = {
-    "show_related": False,
-    "github_button": True,
-    "github_user": "SAP",
-    "github_repo": "python-pyodata",
-    "github_type": "star",
-    "travis_button": True,
+    'show_related': False,
+    'github_button': True,
+    'github_user': 'SAP',
+    'github_repo': 'python-pyodata',
+    'github_type': 'star',
+    'travis_button': True,
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -121,15 +121,12 @@ latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
-
     # The font size ('10pt', '11pt' or '12pt').
     #
     # 'pointsize': '10pt',
-
     # Additional stuff for the LaTeX preamble.
     #
     # 'preamble': '',
-
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
@@ -139,8 +136,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'PyOData.tex', 'PyOData Documentation',
-     'SAP', 'manual'),
+    (master_doc, 'PyOData.tex', 'PyOData Documentation', 'SAP', 'manual'),
 ]
 
 
@@ -148,10 +144,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'pyodata', 'PyOData Documentation',
-     [author], 1)
-]
+man_pages = [(master_doc, 'pyodata', 'PyOData Documentation', [author], 1)]
 
 
 # -- Options for Texinfo output ----------------------------------------------
@@ -160,9 +153,15 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'PyOData', 'PyOData Documentation',
-     author, 'PyOData', 'One line description of project.',
-     'Miscellaneous'),
+    (
+        master_doc,
+        'PyOData',
+        'PyOData Documentation',
+        author,
+        'PyOData',
+        'One line description of project.',
+        'Miscellaneous',
+    ),
 ]
 
 

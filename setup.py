@@ -20,40 +20,42 @@ source_location = os.path.abspath(os.path.dirname(__file__))
 
 NAME = 'python-pyodata'
 HERE = os.path.abspath(os.path.dirname(__file__))
+
+
 def _read(name):
     with open(os.path.join(HERE, name), 'r', encoding='utf-8') as f:
         return f.read()
 
+
 setup(
-    name="pyodata",
+    name='pyodata',
     version=_read('VERSION').strip(),
-    license="Apache License Version 2.0",
-    url="https://github.com/SAP/python-pyodata",
-    author="Jakub Filak, Michal Nezerka, Patrik Petrik, Lubos Mjachky",
-    author_email="jakub.filak@sap.com, michal.nezerka@sap.com, patrik.petrik@sap.com, lubos.mjachky@sap.com",
-    description="Enterprise ready Python OData client",
+    license='Apache License Version 2.0',
+    url='https://github.com/SAP/python-pyodata',
+    author='Jakub Filak, Michal Nezerka, Patrik Petrik, Lubos Mjachky',
+    author_email='jakub.filak@sap.com, michal.nezerka@sap.com, patrik.petrik@sap.com, lubos.mjachky@sap.com',
+    description='Enterprise ready Python OData client',
     long_description=_read('README.md'),
-    long_description_content_type="text/markdown",
-    packages=find_packages(exclude=("tests")),
+    long_description_content_type='text/markdown',
+    packages=find_packages(exclude=('tests')),
     zip_safe=False,
     install_requires=[
-        "lxml>=3.7.3",
+        'lxml>=3.7.3',
     ],
-    extras_require={
-    },
+    extras_require={},
     tests_require=[
-        "codecov",
-        "flake8",
-        "setuptools>=38.2.4",
-        "setuptools-scm>=1.15.6",
-        "requests==2.23.0",
-        "responses>=0.8.1",
-        "pylint",
-        "pytest>=2.7.0",
-        "pytest-cov",
-        "sphinx",
+        'codecov',
+        'flake8',
+        'setuptools>=38.2.4',
+        'setuptools-scm>=1.15.6',
+        'requests==2.23.0',
+        'responses>=0.8.1',
+        'pylint',
+        'pytest>=2.7.0',
+        'pytest-cov',
+        'sphinx',
     ],
-    classifiers=[ # cf. http://pypi.python.org/pypi?%3Aaction=list_classifiers
+    classifiers=[  # cf. http://pypi.python.org/pypi?%3Aaction=list_classifiers
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
@@ -64,6 +66,5 @@ setup(
         'Topic :: Software Development',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    entry_points = {
-    },
+    entry_points={},
 )

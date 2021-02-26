@@ -17,7 +17,7 @@ def contents_of_fixtures_file(file_name):
 @pytest.fixture
 def metadata():
     """Example OData metadata"""
-    return contents_of_fixtures_file("metadata.xml")
+    return contents_of_fixtures_file('metadata.xml')
 
 
 @pytest.fixture
@@ -34,7 +34,7 @@ def xml_builder_factory():
             self.schema_is_enabled = True
 
             self.namespaces = {
-                'edmx': "http://schemas.microsoft.com/ado/2007/06/edmx",
+                'edmx': 'http://schemas.microsoft.com/ado/2007/06/edmx',
                 'sap': 'http://www.sap.com/Protocols/SAPData',
                 'edm': 'http://schemas.microsoft.com/ado/2008/09/edm',
                 'm': 'http://schemas.microsoft.com/ado/2007/08/dataservices/metadata',
@@ -47,17 +47,19 @@ def xml_builder_factory():
             self.custom_data_services_prologue = None
             self.custom_data_services_epilogue = None
 
-            self._reference = '\n<edmx:Reference xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Uri="https://example.sap.corp/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName=\'%2FIWBEP%2FVOC_COMMON\',Version=\'0001\',SAP__Origin=\'LOCAL\')/$value">' + \
-                              '\n<edmx:Include Namespace="com.sap.vocabularies.Common.v1" Alias="Common"/>' + \
-                              '\n</edmx:Reference>'
+            self._reference = (
+                "\n<edmx:Reference xmlns:edmx=\"http://docs.oasis-open.org/odata/ns/edmx\" Uri=\"https://example.sap.corp/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMON',Version='0001',SAP__Origin='LOCAL')/$value\">"
+                + '\n<edmx:Include Namespace="com.sap.vocabularies.Common.v1" Alias="Common"/>'
+                + '\n</edmx:Reference>'
+            )
 
             self._schemas = ''
 
         def add_schema(self, namespace, xml_definition):
             """Add schema element"""
-            self._schemas += f""""\n<Schema xmlns:d="{self.namespaces["d"]}" xmlns:m="{self.namespaces["m"]}" xmlns="{
-            self.namespaces["edm"]}" Namespace="{namespace}" xml:lang="en" sap:schema-version="1">"""
-            self._schemas += "\n" + xml_definition
+            self._schemas += f'''"\n<Schema xmlns:d="{self.namespaces["d"]}" xmlns:m="{self.namespaces["m"]}" xmlns="{
+            self.namespaces["edm"]}" Namespace="{namespace}" xml:lang="en" sap:schema-version="1">'''
+            self._schemas += '\n' + xml_definition
             self._schemas += '\n</Schema>'
 
         def serialize(self):
@@ -84,7 +86,7 @@ def xml_builder_factory():
             if self.custom_edmx_prologue:
                 prologue = self.custom_edmx_prologue
             else:
-                prologue = f"""<edmx:Edmx  xmlns:edmx="{self.namespaces["edmx"]}" xmlns:m="{self.namespaces["m"]}" xmlns:sap="{self.namespaces["sap"]}" Version="1.0">"""
+                prologue = f'''<edmx:Edmx  xmlns:edmx="{self.namespaces["edmx"]}" xmlns:m="{self.namespaces["m"]}" xmlns:sap="{self.namespaces["sap"]}" Version="1.0">'''
             return prologue
 
         def _edmx_epilogue(self):

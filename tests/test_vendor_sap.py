@@ -10,83 +10,6 @@ import requests
 import json
 
 
-AUTH_URL = "https://example.authentication.hana.ondemand.com"
-BTP_USER = "example_btp_user@gmail.com"
-BTP_PASSWORD = "example_password"
-CLIENTID = "example-client-id"
-CLIENTSECRET = "example-client-secret"
-mock_key_valid = {
-    "uaa": {
-        "url": AUTH_URL,
-        "clientid": CLIENTID,
-        "clientsecret": CLIENTSECRET
-    }
-}
-
-
-@responses.activate
-def test_add_btp_token_to_session_valid():
-    """Valid username, password and key return a session with set token"""
-
-    responses.add(
-        responses.POST,
-        AUTH_URL + f'/oauth/token?grant_type=password&username={BTP_USER}&password={BTP_PASSWORD}',
-        headers={'Content-type': 'application/json'},
-        json={'id_token': 'valid_id_token'},
-        status=200)
-
-    result = SAP.add_btp_token_to_session(requests.Session(), mock_key_valid, BTP_USER, BTP_PASSWORD)
-    assert result.headers['Authorization'] == 'Bearer valid_id_token'
-
-
-@responses.activate
-def test_add_btp_token_to_session_invalid_user():
-    """Invalid username returns an HttpError"""
-
-    invalid_user = "invalid@user.com"
-    responses.add(
-        responses.POST,
-        AUTH_URL + f'/oauth/token?grant_type=password&username={invalid_user}&password={BTP_PASSWORD}',
-        headers={'Content-type': 'application/json'},
-        json={
-            'error': 'unauthorized',
-            'error_description': {
-                'error': 'invalid_grant',
-                'error_description': 'User authentication failed.'
-            }
-        },
-        status=401)
-
-    with pytest.raises(HttpError) as caught:
-        SAP.add_btp_token_to_session(requests.Session(), mock_key_valid, invalid_user, BTP_PASSWORD)
-
-    assert caught.value.response.status_code == 401
-    assert json.loads(caught.value.response.text)['error_description']['error'] == 'invalid_grant'
-
-
-@responses.activate
-def test_add_btp_token_to_session_invalid_clientid():
-    """Invalid username returns an HttpError"""
-
-    invalid_key = mock_key_valid.copy()
-    invalid_key['uaa']['clientid'] = 'invalid-client-id'
-    responses.add(
-        responses.POST,
-        AUTH_URL + f'/oauth/token?grant_type=password&username={BTP_USER}&password={BTP_PASSWORD}',
-        headers={'Content-type': 'application/json'},
-        json={
-            'error': 'unauthorized',
-            'error_description': 'Bad credentials'
-        },
-        status=401)
-
-    with pytest.raises(HttpError) as caught:
-        SAP.add_btp_token_to_session(requests.Session(), invalid_key, BTP_USER, BTP_PASSWORD)
-
-    assert caught.value.response.status_code == 401
-    assert json.loads(caught.value.response.text)['error_description'] == 'Bad credentials'
-
-
 class MockResponse(NamedTuple):
     content: ByteString
 
@@ -263,3 +186,80 @@ def test_vendor_http_error(response_with_error):
     sap_error = HttpError('Another foo bar', response_with_error)
     assert isinstance(sap_error, SAP.BusinessGatewayError)
     assert str(sap_error) == 'Gateway Error'
+
+
+MOCK_AUTH_URL = "https://example.authentication.hana.ondemand.com"
+MOCK_BTP_USER = "example_btp_user@gmail.com"
+MOCK_BTP_PASSWORD = "example_password"
+MOCK_KEY = {
+    "uaa": {
+        "url": MOCK_AUTH_URL,
+        "clientid": "example-client-id",
+        "clientsecret": "example-client-secret"
+    }
+}
+
+
+@responses.activate
+def test_add_btp_token_to_session_valid():
+    """Valid username, password and key return a session with set token"""
+
+    responses.add(
+        responses.POST,
+        MOCK_AUTH_URL + f'/oauth/token?grant_type=password&username={MOCK_BTP_USER}&password={MOCK_BTP_PASSWORD}',
+        headers={'Content-type': 'application/json'},
+        json={'id_token': 'valid_id_token'},
+        status=200)
+
+    result = SAP.add_btp_token_to_session(requests.Session(), MOCK_KEY, MOCK_BTP_USER, MOCK_BTP_PASSWORD)
+    assert result.headers['Authorization'] == 'Bearer valid_id_token'
+
+
+@responses.activate
+def test_add_btp_token_to_session_invalid_user():
+    """Invalid username returns an HttpError"""
+
+    invalid_user = "invalid@user.com"
+
+    responses.add(
+        responses.POST,
+        MOCK_AUTH_URL + f'/oauth/token?grant_type=password&username={invalid_user}&password={MOCK_BTP_PASSWORD}',
+        headers={'Content-type': 'application/json'},
+        json={
+            'error': 'unauthorized',
+            'error_description': {
+                'error': 'invalid_grant',
+                'error_description': 'User authentication failed.'
+            }
+        },
+        status=401)
+
+    with pytest.raises(HttpError) as caught:
+        SAP.add_btp_token_to_session(requests.Session(), MOCK_KEY, invalid_user, MOCK_BTP_PASSWORD)
+
+    assert caught.value.response.status_code == 401
+    assert json.loads(caught.value.response.text)['error_description']['error'] == 'invalid_grant'
+
+
+@responses.activate
+def test_add_btp_token_to_session_invalid_clientid():
+    """Invalid clientid returns an HttpError"""
+
+    invalid_key = MOCK_KEY.copy()
+    invalid_key['uaa']['clientid'] = 'invalid-client-id'
+
+    responses.add(
+        responses.POST,
+        MOCK_AUTH_URL + f'/oauth/token?grant_type=password&username={MOCK_BTP_USER}&password={MOCK_BTP_PASSWORD}',
+        headers={'Content-type': 'application/json'},
+        json={
+            'error': 'unauthorized',
+            'error_description': 'Bad credentials'
+        },
+        status=401)
+
+    with pytest.raises(HttpError) as caught:
+        SAP.add_btp_token_to_session(requests.Session(), invalid_key, MOCK_BTP_USER, MOCK_BTP_PASSWORD)
+
+    assert caught.value.response.status_code == 401
+    assert json.loads(caught.value.response.text)['error_description'] == 'Bad credentials'

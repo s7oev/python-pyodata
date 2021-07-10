@@ -25,8 +25,16 @@ def json_get(obj, member, typ, default=None):
 
 
 def add_btp_token_to_session(session, key, user, password):
+    """"TODO: documentation
+    """
     token_url = key['uaa']['url'] + f'/oauth/token?grant_type=password&username={user}&password={password}'
     token_response = session.post(token_url, auth=(key['uaa']['clientid'], key['uaa']['clientsecret']))
+
+    if token_response.status_code != 200:
+        raise HttpError(
+            f'Token request failed, status code: {token_response.status_code}, body:\n{token_response.content}',
+            token_response)
+
     token_response = json.loads(token_response.text)
     token = token_response['id_token']
 

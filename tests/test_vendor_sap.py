@@ -5,6 +5,36 @@ from typing import NamedTuple, ByteString
 import pytest
 from pyodata.exceptions import PyODataException, HttpError
 from pyodata.vendor import SAP
+import responses
+import requests
+
+
+AUTH_URL = "https://example.authentication.hana.ondemand.com"
+BTP_USER = "example_btp_user@gmail.com"
+BTP_PASSWORD = "example_password"
+CLIENTID = "example-client-id"
+CLIENTSECRET = "example-client-secret"
+mock_key_valid = {
+    "uaa": {
+        "url": AUTH_URL,
+        "clientid": CLIENTID,
+        "clientsecret": CLIENTSECRET
+    }
+}
+
+
+@responses.activate
+def test_add_btp_token_to_session_valid():
+    """Valid username, password and key return a session with set token"""
+    responses.add(
+        responses.POST,
+        AUTH_URL + f'/oauth/token?grant_type=password&username={BTP_USER}&password={BTP_PASSWORD}',
+        headers={'Content-type': 'application/json'},
+        json={'id_token': 'valid_id_token'},
+        status=200)
+
+    result = SAP.add_btp_token_to_session(requests.Session(), mock_key_valid, BTP_USER, BTP_PASSWORD)
+    assert result.headers['Authorization'] == 'Bearer valid_id_token'
 
 
 class MockResponse(NamedTuple):

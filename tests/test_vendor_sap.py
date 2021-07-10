@@ -7,6 +7,7 @@ from pyodata.exceptions import PyODataException, HttpError
 from pyodata.vendor import SAP
 import responses
 import requests
+import json
 
 
 AUTH_URL = "https://example.authentication.hana.ondemand.com"
@@ -26,6 +27,7 @@ mock_key_valid = {
 @responses.activate
 def test_add_btp_token_to_session_valid():
     """Valid username, password and key return a session with set token"""
+
     responses.add(
         responses.POST,
         AUTH_URL + f'/oauth/token?grant_type=password&username={BTP_USER}&password={BTP_PASSWORD}',
@@ -35,6 +37,54 @@ def test_add_btp_token_to_session_valid():
 
     result = SAP.add_btp_token_to_session(requests.Session(), mock_key_valid, BTP_USER, BTP_PASSWORD)
     assert result.headers['Authorization'] == 'Bearer valid_id_token'
+
+
+@responses.activate
+def test_add_btp_token_to_session_invalid_user():
+    """Invalid username returns an HttpError"""
+
+    invalid_user = "invalid@user.com"
+    responses.add(
+        responses.POST,
+        AUTH_URL + f'/oauth/token?grant_type=password&username={invalid_user}&password={BTP_PASSWORD}',
+        headers={'Content-type': 'application/json'},
+        json={
+            'error': 'unauthorized',
+            'error_description': {
+                'error': 'invalid_grant',
+                'error_description': 'User authentication failed.'
+            }
+        },
+        status=401)
+
+    with pytest.raises(HttpError) as caught:
+        SAP.add_btp_token_to_session(requests.Session(), mock_key_valid, invalid_user, BTP_PASSWORD)
+
+    assert caught.value.response.status_code == 401
+    assert json.loads(caught.value.response.text)['error_description']['error'] == 'invalid_grant'
+
+
+@responses.activate
+def test_add_btp_token_to_session_invalid_clientid():
+    """Invalid username returns an HttpError"""
+
+    invalid_key = mock_key_valid.copy()
+    invalid_key['uaa']['clientid'] = 'invalid-client-id'
+    responses.add(
+        responses.POST,
+        AUTH_URL + f'/oauth/token?grant_type=password&username={BTP_USER}&password={BTP_PASSWORD}',
+        headers={'Content-type': 'application/json'},
+        json={
+            'error': 'unauthorized',
+            'error_description': 'Bad credentials'
+        },
+        status=401)
+
+    with pytest.raises(HttpError) as caught:
+        SAP.add_btp_token_to_session(requests.Session(), invalid_key, BTP_USER, BTP_PASSWORD)
+
+    assert caught.value.response.status_code == 401
+    assert json.loads(caught.value.response.text)['error_description'] == 'Bad credentials'
 
 
 class MockResponse(NamedTuple):

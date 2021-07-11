@@ -208,7 +208,15 @@ def test_add_btp_token_to_session_valid():
         responses.POST,
         MOCK_AUTH_URL + f'/oauth/token?grant_type=password&username={MOCK_BTP_USER}&password={MOCK_BTP_PASSWORD}',
         headers={'Content-type': 'application/json'},
-        json={'id_token': 'valid_id_token'},
+        json={
+            'access_token': 'valid_access_token',
+            'token_type': 'bearer',
+            'id_token': 'valid_id_token',
+            'refresh_token': 'valid_refresh_token',
+            'expires_in': 43199,
+            'scope': 'openid uaa.user',
+            'jti': 'valid_jti'
+        },
         status=200)
 
     result = SAP.add_btp_token_to_session(requests.Session(), MOCK_KEY, MOCK_BTP_USER, MOCK_BTP_PASSWORD)
@@ -243,7 +251,7 @@ def test_add_btp_token_to_session_invalid_user():
 
 @responses.activate
 def test_add_btp_token_to_session_invalid_clientid():
-    """Invalid clientid returns an HttpError"""
+    """Invalid clientid in key returns an HttpError"""
 
     invalid_key = MOCK_KEY.copy()
     invalid_key['uaa']['clientid'] = 'invalid-client-id'

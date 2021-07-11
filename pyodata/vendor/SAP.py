@@ -25,12 +25,12 @@ def json_get(obj, member, typ, default=None):
 
 
 def add_btp_token_to_session(session, key, user, password):
-    """"Using the provided credentials, the function tries to add the
-        necessary token for establishing a connection to an OData service
-        coming from SAP BTP, ABAP environment.
+    """Using the provided credentials, the function tries to add the
+       necessary token for establishing a connection to an OData service
+       coming from SAP BTP, ABAP environment.
 
-        If any of the provided credentials are invalid, the server will
-        respond with 401, and the function will raise HttpError.
+       If any of the provided credentials are invalid, the server will
+       respond with 401, and the function will raise HttpError.
     """
     token_url = key['uaa']['url'] + f'/oauth/token?grant_type=password&username={user}&password={password}'
     token_response = session.post(token_url, auth=(key['uaa']['clientid'], key['uaa']['clientsecret']))
